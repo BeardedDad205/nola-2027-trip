@@ -1,0 +1,361 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>NOLA 2027 &mdash; The Itinerary</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,400;0,9..144,500;0,9..144,600;0,9..144,700;1,9..144,500&family=Yellowtail&family=Work+Sans:wght@400;500;600;700&family=IBM+Plex+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --navy:#001226;
+    --navy-2:#132230;
+    --cream:#FCF1DE;
+    --cream-dim:#E1D2BE;
+    --slate:#334D62;
+    --brass:#A27F64;
+    --purple:#5B3E7D;
+    --gold:#C9A036;
+    --chalk:#FCF1DE;
+    --font-display: 'Fraunces', serif;
+    --font-script: 'Yellowtail', cursive;
+    --font-body: 'Work Sans', sans-serif;
+    --font-mono: 'IBM Plex Mono', monospace;
+  }
+  *{box-sizing:border-box;}
+  html{scroll-behavior:smooth;}
+  body{
+    margin:0;
+    background:var(--cream);
+    color:var(--navy);
+    font-family:var(--font-body);
+    line-height:1.6;
+  }
+  a{color:inherit;}
+  .wrap{max-width:920px;margin:0 auto;padding:0 24px;}
+
+  /* ---------- Password gate ---------- */
+  #gate{
+    position:fixed;inset:0;background:var(--navy);color:var(--chalk);
+    display:flex;align-items:center;justify-content:center;z-index:100;
+    padding:24px;
+  }
+  #gate.hidden{display:none;}
+  .gate-box{max-width:380px;width:100%;text-align:center;}
+  .gate-box p.eyebrow{font-family:var(--font-mono);font-size:12px;letter-spacing:0.12em;text-transform:uppercase;color:var(--gold);margin:0 0 14px;}
+  .gate-box h1{font-family:var(--font-script);font-size:46px;font-weight:400;margin:0 0 18px;color:var(--chalk);}
+  .gate-box input{
+    width:100%;padding:14px 16px;font-family:var(--font-mono);font-size:15px;
+    border:1px solid rgba(252,241,222,0.3);background:rgba(252,241,222,0.06);
+    color:var(--chalk);border-radius:2px;margin-bottom:12px;text-align:center;
+    letter-spacing:0.1em;
+  }
+  .gate-box input::placeholder{color:rgba(252,241,222,0.4);}
+  .gate-box button{
+    width:100%;padding:14px;background:var(--gold);color:var(--navy);border:none;
+    font-weight:600;font-size:15px;border-radius:2px;cursor:pointer;font-family:var(--font-body);
+  }
+  .gate-box .err{color:#e08585;font-size:13px;margin-top:12px;height:16px;font-family:var(--font-mono);}
+
+  main{display:none;}
+  main.show{display:block;}
+
+  nav{
+    position:sticky;top:0;z-index:20;
+    background:rgba(252,241,222,0.94);
+    backdrop-filter:blur(6px);
+    border-bottom:1px solid rgba(0,18,38,0.1);
+  }
+  nav .wrap{display:flex;align-items:center;justify-content:space-between;height:64px;overflow-x:auto;}
+  .brand{font-family:var(--font-display);font-weight:600;font-size:16px;white-space:nowrap;}
+  .navlinks{display:flex;gap:20px;font-size:13px;font-weight:500;white-space:nowrap;}
+  .navlinks a{text-decoration:none;opacity:0.75;}
+  .navlinks a:hover{opacity:1;}
+
+  .hero{background:var(--navy);color:var(--chalk);padding:64px 0 48px;text-align:center;position:relative;}
+  .hero .eyebrow{font-family:var(--font-mono);font-size:12px;letter-spacing:0.12em;text-transform:uppercase;color:var(--gold);margin:0 0 18px;}
+  .hero h1{font-family:var(--font-display);font-weight:600;font-size:clamp(30px,5vw,46px);margin:0 0 8px;}
+  .hero .script{font-family:var(--font-script);font-size:1.3em;color:var(--gold);display:block;line-height:1;margin-bottom:6px;}
+  .hero .dates{font-family:var(--font-mono);font-size:14px;color:rgba(252,241,222,0.75);margin:0 0 22px;}
+  .crew{display:flex;gap:10px;justify-content:center;flex-wrap:wrap;}
+  .crew span{
+    font-family:var(--font-mono);font-size:12px;letter-spacing:0.04em;
+    border:1px solid rgba(252,241,222,0.3);padding:6px 14px;border-radius:20px;
+  }
+
+  section{padding:56px 0;border-bottom:1px solid rgba(0,18,38,0.1);}
+  .section-label{font-family:var(--font-mono);font-size:12px;letter-spacing:0.12em;text-transform:uppercase;color:var(--slate);margin:0 0 12px;}
+  h2{font-family:var(--font-display);font-weight:600;font-size:clamp(24px,3.4vw,32px);margin:0 0 24px;}
+  h2 .accent{color:var(--purple);}
+
+  /* Flight cards */
+  .flights{display:grid;grid-template-columns:1fr 1fr;gap:16px;}
+  .flight-card{background:#fff;border:1px solid rgba(0,18,38,0.12);border-radius:6px;padding:22px;position:relative;overflow:hidden;}
+  .flight-card::before{content:'';position:absolute;left:0;top:0;bottom:0;width:5px;background:var(--purple);}
+  .flight-card .dir{font-family:var(--font-display);font-weight:600;font-size:17px;margin:0 0 8px;}
+  .flight-card .num{font-family:var(--font-mono);font-size:12px;color:var(--slate);margin:0 0 14px;}
+  .flight-card .route{font-family:var(--font-display);font-weight:600;font-size:22px;margin:0 0 6px;}
+  .flight-card .time{font-size:15px;margin:0 0 4px;}
+  .flight-card .meta{font-family:var(--font-mono);font-size:12px;color:var(--slate);}
+
+  /* Day by day */
+  .day{display:grid;grid-template-columns:100px 1fr;gap:20px;padding:22px 0;border-top:1px solid rgba(0,18,38,0.1);}
+  .day:first-of-type{border-top:none;}
+  .day-label{font-family:var(--font-mono);font-size:12px;color:var(--purple);padding-top:2px;}
+  .day-label .num{display:block;font-family:var(--font-display);font-size:26px;color:var(--navy);font-weight:600;}
+  .day h3{font-family:var(--font-display);font-weight:600;font-size:18px;margin:0 0 8px;}
+  .day ul{margin:0;padding-left:18px;font-size:15px;color:rgba(0,18,38,0.75);}
+  .day li{margin-bottom:4px;}
+  .day li.tbd{color:var(--brass);font-style:italic;}
+  textarea.notes-field{
+    width:100%;min-height:44px;font-family:var(--font-body);font-size:14px;
+    border:1px dashed rgba(0,18,38,0.25);background:rgba(0,18,38,0.02);
+    border-radius:4px;padding:10px 12px;resize:vertical;margin-top:8px;color:var(--navy);
+  }
+
+  /* Food grid */
+  .food-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:1px;background:rgba(0,18,38,0.1);border:1px solid rgba(0,18,38,0.1);}
+  .food{background:var(--cream);padding:20px;}
+  .food .tag{font-family:var(--font-mono);font-size:10px;letter-spacing:0.06em;text-transform:uppercase;color:var(--gold);margin:0 0 6px;}
+  .food h4{font-family:var(--font-display);font-weight:600;font-size:16px;margin:0 0 6px;}
+  .food p{font-size:13px;color:rgba(0,18,38,0.65);margin:0;}
+
+  /* Packing checklist */
+  .checklist{display:grid;grid-template-columns:1fr 1fr;gap:8px 24px;}
+  .checklist label{display:flex;align-items:center;gap:10px;font-size:14px;cursor:pointer;padding:4px 0;}
+  .checklist input[type=checkbox]{width:17px;height:17px;accent-color:var(--purple);cursor:pointer;}
+
+  /* Notes / decisions */
+  .decisions{display:flex;flex-direction:column;gap:14px;}
+  .decision{background:#fff;border:1px solid rgba(0,18,38,0.12);border-radius:6px;padding:16px 20px;}
+  .decision .q{font-weight:600;font-size:15px;margin:0 0 4px;}
+  .decision .who{font-family:var(--font-mono);font-size:11px;color:var(--slate);text-transform:uppercase;letter-spacing:0.04em;}
+
+  footer{background:var(--navy-2);color:rgba(252,241,222,0.7);padding:36px 0;text-align:center;font-family:var(--font-mono);font-size:12px;}
+  footer .script{display:block;font-family:var(--font-script);font-size:26px;color:var(--gold);margin-bottom:10px;}
+
+  @media (max-width:640px){
+    .flights{grid-template-columns:1fr;}
+    .food-grid{grid-template-columns:1fr;}
+    .checklist{grid-template-columns:1fr;}
+    .day{grid-template-columns:60px 1fr;}
+    .navlinks{gap:14px;}
+  }
+</style>
+</head>
+<body>
+
+<div id="gate">
+  <div class="gate-box">
+    <p class="eyebrow">Private &middot; Crew Only</p>
+    <h1>Laissez les bons temps rouler</h1>
+    <input type="password" id="pw" placeholder="PASSWORD" autocomplete="off">
+    <button onclick="checkPw()">Let's go</button>
+    <div class="err" id="err"></div>
+  </div>
+</div>
+
+<main id="main">
+
+<nav>
+  <div class="wrap">
+    <div class="brand">NOLA &middot; Jan 2027</div>
+    <div class="navlinks">
+      <a href="#flights">Flights</a>
+      <a href="#itinerary">Itinerary</a>
+      <a href="#food">Food</a>
+      <a href="#packing">Packing</a>
+      <a href="#decisions">To decide</a>
+    </div>
+  </div>
+</nav>
+
+<section class="hero">
+  <div class="wrap">
+    <p class="eyebrow">The Crew's Big Trip</p>
+    <h1><span class="script">New Orleans</span>January 7&ndash;11, 2027</h1>
+    <p class="dates">4 nights &middot; French Quarter &amp; beyond</p>
+    <div class="crew">
+      <span>Michael</span>
+      <span>Brian</span>
+      <span>Jessica</span>
+      <span>Paul</span>
+    </div>
+  </div>
+</section>
+
+<section id="flights">
+  <div class="wrap">
+    <p class="section-label">Getting there</p>
+    <h2>Flight <span class="accent">details</span></h2>
+    <div class="flights">
+      <div class="flight-card">
+        <p class="dir">Outbound</p>
+        <p class="num">Delta DL2790 &middot; Thu, Jan 7</p>
+        <p class="route">DTW &rarr; MSY</p>
+        <p class="time">8:50am &ndash; 10:34am</p>
+        <p class="meta">Nonstop &middot; 2h 44m &middot; Main Classic</p>
+      </div>
+      <div class="flight-card">
+        <p class="dir">Return</p>
+        <p class="num">Delta DL2790 &middot; Mon, Jan 11</p>
+        <p class="route">MSY &rarr; DTW</p>
+        <p class="time">11:18am &ndash; 2:48pm</p>
+        <p class="meta">Nonstop &middot; 2h 30m &middot; Main Classic</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section id="itinerary">
+  <div class="wrap">
+    <p class="section-label">Day by day</p>
+    <h2>The <span class="accent">itinerary</span></h2>
+
+    <div class="day">
+      <div class="day-label">THU<span class="num">07</span></div>
+      <div>
+        <h3>Touchdown</h3>
+        <ul>
+          <li>Land MSY 10:34am, grab bags, rideshare/shuttle into the Quarter</li>
+          <li class="tbd">Hotel check-in &mdash; TBD (where are we staying?)</li>
+          <li class="tbd">First-night dinner spot &mdash; TBD</li>
+          <li>Wander Bourbon St / Frenchmen St for live music, ease into it</li>
+        </ul>
+        <textarea class="notes-field" placeholder="Notes for Thursday..."></textarea>
+      </div>
+    </div>
+
+    <div class="day">
+      <div class="day-label">FRI<span class="num">08</span></div>
+      <div>
+        <h3>French Quarter day</h3>
+        <ul>
+          <li>Cafe du Monde beignets, obviously</li>
+          <li class="tbd">French Quarter walking tour or ghost/history tour &mdash; TBD</li>
+          <li class="tbd">Lunch: po'boy stop &mdash; TBD</li>
+          <li class="tbd">Evening plans &mdash; TBD</li>
+        </ul>
+        <textarea class="notes-field" placeholder="Notes for Friday..."></textarea>
+      </div>
+    </div>
+
+    <div class="day">
+      <div class="day-label">SAT<span class="num">09</span></div>
+      <div>
+        <h3>Explore day</h3>
+        <ul>
+          <li class="tbd">Garden District / streetcar ride &mdash; TBD</li>
+          <li class="tbd">Swamp tour or plantation day trip? &mdash; TBD, needs a vote</li>
+          <li class="tbd">Dinner reservation &mdash; TBD</li>
+          <li class="tbd">Live music venue for the night &mdash; TBD</li>
+        </ul>
+        <textarea class="notes-field" placeholder="Notes for Saturday..."></textarea>
+      </div>
+    </div>
+
+    <div class="day">
+      <div class="day-label">SUN<span class="num">10</span></div>
+      <div>
+        <h3>Last full day</h3>
+        <ul>
+          <li class="tbd">Brunch spot with a Sazerac or bottomless mimosas &mdash; TBD</li>
+          <li class="tbd">Anything still on the list &mdash; TBD</li>
+          <li>Pack early, last hurrah in the Quarter</li>
+        </ul>
+        <textarea class="notes-field" placeholder="Notes for Sunday..."></textarea>
+      </div>
+    </div>
+
+    <div class="day">
+      <div class="day-label">MON<span class="num">11</span></div>
+      <div>
+        <h3>Fly home</h3>
+        <ul>
+          <li>Flight departs MSY 11:18am &mdash; leave hotel with plenty of buffer</li>
+          <li class="tbd">Quick breakfast/coffee run before the airport &mdash; TBD</li>
+        </ul>
+        <textarea class="notes-field" placeholder="Notes for Monday..."></textarea>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section id="food">
+  <div class="wrap">
+    <p class="section-label">Non-negotiables</p>
+    <h2>Eat <span class="accent">everything</span></h2>
+    <div class="food-grid">
+      <div class="food"><p class="tag">Breakfast</p><h4>Beignets, Cafe du Monde</h4><p>Powdered sugar everywhere. It's tradition.</p></div>
+      <div class="food"><p class="tag">Lunch</p><h4>Po'boy</h4><p>Fried shrimp or roast beef &amp; gravy, dressed.</p></div>
+      <div class="food"><p class="tag">Lunch</p><h4>Muffuletta</h4><p>Central Grocery or Napoleon House.</p></div>
+      <div class="food"><p class="tag">Dinner</p><h4>Gumbo</h4><p>Ask ten locals, get ten "best" spots.</p></div>
+      <div class="food"><p class="tag">Dinner</p><h4>Jambalaya &amp; etouffee</h4><p>Split plates, compare notes.</p></div>
+      <div class="food"><p class="tag">Raw bar</p><h4>Oysters</h4><p>Char-grilled or chilled &mdash; do both.</p></div>
+      <div class="food"><p class="tag">Drinks</p><h4>Sazerac</h4><p>The city's official cocktail, invented here.</p></div>
+      <div class="food"><p class="tag">Drinks</p><h4>Hurricane</h4><p>Pat O'Brien's, at least once, for the photo.</p></div>
+      <div class="food"><p class="tag">Sweet</p><h4>Pralines &amp; king cake</h4><p>King cake season lines up perfectly with January.</p></div>
+    </div>
+  </div>
+</section>
+
+<section id="packing">
+  <div class="wrap">
+    <p class="section-label">Don't forget</p>
+    <h2>Packing <span class="accent">list</span></h2>
+    <div class="checklist">
+      <label><input type="checkbox"> Comfortable walking shoes</label>
+      <label><input type="checkbox"> Light jacket (Jan evenings run cool)</label>
+      <label><input type="checkbox"> Rain layer / small umbrella</label>
+      <label><input type="checkbox"> Portable phone charger</label>
+      <label><input type="checkbox"> ID for bars &amp; flights</label>
+      <label><input type="checkbox"> Cash for street musicians &amp; cash-only spots</label>
+      <label><input type="checkbox"> Sunglasses</label>
+      <label><input type="checkbox"> Camera / phone storage cleared out</label>
+      <label><input type="checkbox"> Any confirmation numbers saved offline</label>
+      <label><input type="checkbox"> Advil/Tums &mdash; you'll thank yourself</label>
+    </div>
+  </div>
+</section>
+
+<section id="decisions">
+  <div class="wrap">
+    <p class="section-label">Group chat, assemble</p>
+    <h2>Still need to <span class="accent">decide</span></h2>
+    <div class="decisions">
+      <div class="decision"><p class="q">Where are we staying?</p><p class="who">Needs a vote &middot; French Quarter vs. slightly outside for a better rate</p></div>
+      <div class="decision"><p class="q">Swamp tour or plantation tour on Saturday?</p><p class="who">Needs a vote</p></div>
+      <div class="decision"><p class="q">Any dinner reservations to lock in early?</p><p class="who">Popular spots book out &mdash; flag favorites soon</p></div>
+      <div class="decision"><p class="q">Splitting costs / who's booking what</p><p class="who">Hotel, tours, big dinners</p></div>
+    </div>
+  </div>
+</section>
+
+<footer>
+  <span class="script">See y'all in the Quarter</span>
+  Michael &middot; Brian &middot; Jessica &middot; Paul &mdash; NOLA, Jan 2027
+</footer>
+
+</main>
+
+<script>
+  const PW = "NOLA0107";
+  function checkPw(){
+    const val = document.getElementById('pw').value.trim().toUpperCase();
+    if(val === PW){
+      document.getElementById('gate').classList.add('hidden');
+      document.getElementById('main').classList.add('show');
+      sessionStorage.setItem('nola_ok','1');
+    } else {
+      document.getElementById('err').textContent = 'Nope, try again.';
+    }
+  }
+  document.getElementById('pw').addEventListener('keydown', e => { if(e.key === 'Enter') checkPw(); });
+  if(sessionStorage.getItem('nola_ok') === '1'){
+    document.getElementById('gate').classList.add('hidden');
+    document.getElementById('main').classList.add('show');
+  }
+</script>
+
+</body>
+</html>
