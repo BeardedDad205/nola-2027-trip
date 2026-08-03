@@ -123,6 +123,13 @@
   /* Packing checklist */
   .checklist{display:grid;grid-template-columns:1fr 1fr;gap:8px 24px;}
 
+  /* Crew bios */
+  .crew-grid{display:grid;grid-template-columns:repeat(2,1fr);gap:1px;background:rgba(0,18,38,0.1);border:1px solid rgba(0,18,38,0.1);}
+  .crew-card{background:var(--cream);padding:28px;}
+  .crew-card .tag{font-family:var(--font-mono);font-size:11px;letter-spacing:0.06em;text-transform:uppercase;color:var(--gold);margin:0 0 10px;}
+  .crew-card h3{font-family:var(--font-display);font-weight:600;font-size:19px;margin:0 0 10px;}
+  .crew-card p.bio{font-size:15px;color:rgba(0,18,38,0.7);margin:0;}
+
   /* Costs table */
   .cost-wrap{overflow-x:auto;}
   .cost-table{width:100%;border-collapse:collapse;font-size:15px;min-width:420px;}
@@ -151,6 +158,7 @@
   @media (max-width:640px){
     .flights{grid-template-columns:1fr;}
     .food-grid{grid-template-columns:1fr;}
+    .crew-grid{grid-template-columns:1fr;}
     .checklist{grid-template-columns:1fr;}
     .day{grid-template-columns:60px 1fr;}
     .navlinks{gap:14px;}
@@ -175,6 +183,7 @@
   <div class="wrap">
     <div class="brand">NOLA &middot; Jan 2027</div>
     <div class="navlinks">
+      <a href="#crew">Crew</a>
       <a href="#flights">Flights</a>
       <a href="#staying">Staying</a>
       <a href="#itinerary">Itinerary</a>
@@ -196,6 +205,35 @@
       <span>Brian</span>
       <span>Jessica</span>
       <span>Paul</span>
+    </div>
+  </div>
+</section>
+
+<section id="crew">
+  <div class="wrap">
+    <p class="section-label">Meet the crew</p>
+    <h2>Who's <span class="accent">coming</span></h2>
+    <div class="crew-grid">
+      <div class="crew-card">
+        <p class="tag">Chief Adventure Architect</p>
+        <h3>Michael Crowe</h3>
+        <p class="bio">The mastermind behind the routes, reservations, and ridiculously detailed itineraries. Always searching for the best food, hidden gems, and unforgettable experiences, because the best adventures don't happen by accident.</p>
+      </div>
+      <div class="crew-card">
+        <p class="tag">Director of Good-ish Decisions (Usually)</p>
+        <h3>Brian Warren</h3>
+        <p class="bio">A caring dad, meme connoisseur, and Facebook's most dedicated repost specialist. Known for trying to keep up with Michael at the bar, and reliably remembering the next morning why that's a terrible idea.</p>
+      </div>
+      <div class="crew-card">
+        <p class="tag">Chief Content Creator</p>
+        <h3>Paul Achs</h3>
+        <p class="bio">Equal parts devoted husband, amazing dad, and professional dad-joke distributor. If a funny moment happens, Paul is probably already filming it for TikTok, and yes, he'll absolutely make you do another take.</p>
+      </div>
+      <div class="crew-card">
+        <p class="tag">Chief Morale Officer</p>
+        <h3>Jessica Achs</h3>
+        <p class="bio">The glue that keeps this crew together. An incredible mom, amazing wife, and somehow patient enough to put up with the rest of us. Always ready to say "yes" to the next adventure.</p>
+      </div>
     </div>
   </div>
 </section>
